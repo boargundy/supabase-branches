@@ -1,0 +1,40 @@
+name: Deploy Dev to Prod
+on:
+  workflow_dispatch:
+    branches:
+      - dev  # Only allow manual trigger from dev branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DEV_PROJECT_ID: ${{ secrets.DEV_PROJECT_ID }}
+      PROD_PROJECT_ID: ${{ secrets.PROD_PROJECT_ID }}
+      
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+
+      - name: Pull schema from dev branch
+        run: |
+          supabase login --access-token ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          supabase link --project-ref $DEV_PROJECT_ID
+          supabase db pull  # Generates migration from Studio changes
+
+      - name: Commit migrations
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add supabase/migrations/
+          git commit -m "Auto-commit schema changes from dev" || echo "No changes to commit"
+          git push origin dev
+
+      - name: Deploy to production
+        run: |
+          supabase link --project-ref $PROD_PROJECT_ID
+          supabase db push  # Apply all migrations to prod
