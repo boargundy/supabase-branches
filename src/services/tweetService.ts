@@ -20,29 +20,57 @@ export const getTweets = async (): Promise<(Tweet & { user: User })[]> => {
 };
 
 export const likeTweet = async (tweetId: string, liked: boolean): Promise<void> => {
-  const { error } = await supabase
+  // First get the current tweet to get its current likes value
+  const { data: tweet, error: fetchError } = await supabase
     .from("tweets")
-    .update({ 
-      likes: liked ? supabase.rpc('increment', { x: 1 }) : supabase.rpc('decrement', { x: 1 }) 
-    })
-    .eq('id', tweetId);
+    .select("likes")
+    .eq("id", tweetId)
+    .single();
 
-  if (error) {
-    console.error("Error updating tweet likes:", error);
-    throw error;
+  if (fetchError) {
+    console.error("Error fetching tweet:", fetchError);
+    throw fetchError;
+  }
+
+  // Calculate the new likes value
+  const newLikes = liked ? tweet.likes + 1 : Math.max(0, tweet.likes - 1);
+
+  // Update the tweet with the new likes value
+  const { error: updateError } = await supabase
+    .from("tweets")
+    .update({ likes: newLikes })
+    .eq("id", tweetId);
+
+  if (updateError) {
+    console.error("Error updating tweet likes:", updateError);
+    throw updateError;
   }
 };
 
 export const retweetPost = async (tweetId: string, retweeted: boolean): Promise<void> => {
-  const { error } = await supabase
+  // First get the current tweet to get its current retweets value
+  const { data: tweet, error: fetchError } = await supabase
     .from("tweets")
-    .update({ 
-      retweets: retweeted ? supabase.rpc('increment', { x: 1 }) : supabase.rpc('decrement', { x: 1 }) 
-    })
-    .eq('id', tweetId);
+    .select("retweets")
+    .eq("id", tweetId)
+    .single();
 
-  if (error) {
-    console.error("Error updating tweet retweets:", error);
-    throw error;
+  if (fetchError) {
+    console.error("Error fetching tweet:", fetchError);
+    throw fetchError;
+  }
+
+  // Calculate the new retweets value
+  const newRetweets = retweeted ? tweet.retweets + 1 : Math.max(0, tweet.retweets - 1);
+
+  // Update the tweet with the new retweets value
+  const { error: updateError } = await supabase
+    .from("tweets")
+    .update({ retweets: newRetweets })
+    .eq("id", tweetId);
+
+  if (updateError) {
+    console.error("Error updating tweet retweets:", updateError);
+    throw updateError;
   }
 };
