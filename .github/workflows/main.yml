@@ -29,7 +29,12 @@ jobs:
 
       - name: Link Dev Project
         run: |
-          echo "$DEV_DB_PASSWORD" | supabase link --project-ref $DEV_PROJECT_ID
+          expect << EOF
+          spawn supabase link --project-ref $DEV_PROJECT_ID
+          expect "Enter your database password (or leave blank to skip):"
+          send "$DEV_DB_PASSWORD\r"
+          interact
+          EOF
 
       - name: Pull schema from dev branch
         run: |
@@ -45,7 +50,12 @@ jobs:
 
       - name: Link Prod Project
         run: |
-          echo "$PROD_DB_PASSWORD" | supabase link --project-ref $PROD_PROJECT_ID
+          expect << EOF
+          spawn supabase link --project-ref $PROD_PROJECT_ID
+          expect "Enter your database password (or leave blank to skip):"
+          send "$PROD_DB_PASSWORD\r"
+          interact
+          EOF
 
       - name: Deploy to production
         run: |
