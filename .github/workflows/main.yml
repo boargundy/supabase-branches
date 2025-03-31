@@ -47,7 +47,5 @@ jobs:
           send "$PROD_DB_PASSWORD\r"
           interact
           EOF
-
-      - name: Deploy to production
-        run: |
           supabase db push  # Apply all migrations to prod
+
