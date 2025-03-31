@@ -9,57 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      tweets: {
+      ggggg: {
         Row: {
-          content: string
           created_at: string
-          id: string
-          image_url: string | null
-          likes: number
-          replies: number
-          retweets: number
-          user_id: string
+          id: number
         }
         Insert: {
-          content: string
           created_at?: string
-          id?: string
-          image_url?: string | null
-          likes?: number
-          replies?: number
-          retweets?: number
-          user_id: string
+          id?: number
         }
         Update: {
-          content?: string
           created_at?: string
-          id?: string
-          image_url?: string | null
-          likes?: number
-          replies?: number
-          retweets?: number
-          user_id?: string
+          id?: number
         }
         Relationships: []
       }
-      users: {
+      todos: {
         Row: {
-          avatar: string
-          handle: string
-          id: string
-          name: string
+          created_at: string
+          description: string | null
+          id: number
         }
         Insert: {
-          avatar: string
-          handle: string
-          id?: string
-          name: string
+          created_at?: string
+          description?: string | null
+          id?: number
         }
         Update: {
-          avatar?: string
-          handle?: string
-          id?: string
-          name?: string
+          created_at?: string
+          description?: string | null
+          id?: number
         }
         Relationships: []
       }

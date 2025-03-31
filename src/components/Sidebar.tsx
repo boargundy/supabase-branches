@@ -1,12 +1,14 @@
 
 import React from 'react';
-import { Home, MessageSquare, Heart, Twitter } from 'lucide-react';
+import { Home, MessageSquare, Heart, Twitter, CheckSquare } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   const navItems = [
-    { icon: Home, label: 'Home', active: true },
-    { icon: MessageSquare, label: 'Messages', active: false },
-    { icon: Heart, label: 'Notifications', active: false },
+    { icon: Home, label: 'Home', path: '/', active: window.location.pathname === '/' },
+    { icon: MessageSquare, label: 'Messages', path: '#', active: false },
+    { icon: Heart, label: 'Notifications', path: '#', active: false },
+    { icon: CheckSquare, label: 'Todos', path: '/todos', active: window.location.pathname === '/todos' },
   ];
 
   return (
@@ -21,14 +23,14 @@ const Sidebar = () => {
         <ul className="space-y-1">
           {navItems.map((item, index) => (
             <li key={index}>
-              <a 
-                href="#" 
+              <Link 
+                to={item.path} 
                 className={`flex items-center px-3 py-3 rounded-full hover:bg-gray-200 transition-colors text-xl 
                   ${item.active ? 'font-bold' : ''}`}
               >
                 <item.icon size={24} className="mr-4" />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
