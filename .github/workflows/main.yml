@@ -41,6 +41,5 @@ jobs:
 
       - name: Link Prod Project
         run: |
-          DATABASE_URL="postgresql://postgres:${{ secrets.PROD_DB_PASSWORD }}@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
-          supabase db push --url "$DATABASE_URL"
+          supabase db push --db-url "postgresql://postgres:${{ secrets.PROD_DB_PASSWORD }}@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
 
