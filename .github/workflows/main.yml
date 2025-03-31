@@ -39,6 +39,21 @@ jobs:
           interact
           EOF
 
+
+      - name: Pull schema from dev branch
+        run: |
+          supabase db pull --db-url "postgresql://postgres.pmqmkzpriikzvvzlkmgk:${{ secrets.DEV_DB_PASSWORD }}@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
+
+
+      - name: Commit migrations
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add supabase/migrations/
+          git commit -m "Auto-commit schema changes from dev" || echo "No changes to commit"
+          git push origin dev
+
+
       - name: Link Prod Project
         run: |
           supabase db push --db-url "postgresql://postgres.jgyfgxfwlymsrnpfdilx:${{ secrets.PROD_DB_PASSWORD }}@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
