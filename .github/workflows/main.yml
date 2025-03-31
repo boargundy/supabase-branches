@@ -18,6 +18,9 @@ jobs:
         with:
           ref: dev
 
+      - name: Install expect
+        run: sudo apt-get update && sudo apt-get install expect -y
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
