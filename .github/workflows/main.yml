@@ -22,7 +22,7 @@ jobs:
 
       - name: Pull schema from dev branch
         run: |
-          supabase login --access-token ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          supabase login --token ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           supabase link --project-ref $DEV_PROJECT_ID
           supabase db pull  # Generates migration from Studio changes
 
