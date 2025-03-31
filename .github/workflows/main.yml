@@ -1,8 +1,6 @@
 name: Deploy Dev to Prod
 on:
-  workflow_dispatch:
-    branches:
-      - dev  # Only allow manual trigger from dev branch
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   deploy:
@@ -10,9 +8,9 @@ jobs:
     env:
       DEV_PROJECT_ID: ${{ secrets.DEV_PROJECT_ID }}
       PROD_PROJECT_ID: ${{ secrets.PROD_PROJECT_ID }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      DEV_DB_PASSWORD: ${{ secrets.DEV_DB_PASSWORD }}
+      PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
 
-      
     steps:
       - name: Checkout dev branch
         uses: actions/checkout@v4
@@ -22,11 +20,17 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
 
-      - name: Pull schema from dev branch
+      - name: Login to Supabase CLI
         run: |
           supabase login --token ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          echo "$SUPABASE_DB_PASSWORD" | supabase link --project-ref $DEV_PROJECT_ID
-          supabase db pull  # Generates migration from Studio changes
+
+      - name: Link Dev Project
+        run: |
+          echo "$DEV_DB_PASSWORD" | supabase link --project-ref $DEV_PROJECT_ID
+
+      - name: Pull schema from dev branch
+        run: |
+          supabase db pull  # Generates migration scripts from Studio changes
 
       - name: Commit migrations
         run: |
@@ -36,7 +40,10 @@ jobs:
           git commit -m "Auto-commit schema changes from dev" || echo "No changes to commit"
           git push origin dev
 
+      - name: Link Prod Project
+        run: |
+          echo "$PROD_DB_PASSWORD" | supabase link --project-ref $PROD_PROJECT_ID
+
       - name: Deploy to production
         run: |
-          supabase link --project-ref $PROD_PROJECT_ID
           supabase db push  # Apply all migrations to prod
