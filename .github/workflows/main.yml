@@ -55,6 +55,13 @@ jobs:
           git commit -m "Auto-commit schema changes from dev" || echo "No changes to commit"
           git push origin dev
 
+      
+      - name: Merge dev into prod branch
+        run: |
+          git fetch origin
+          git checkout prod
+          git merge origin/dev --no-edit || echo "Already up-to-date"
+          git push origin prod
 
       - name: Link Prod Project
         run: |
