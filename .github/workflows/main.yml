@@ -10,6 +10,8 @@ jobs:
     env:
       DEV_PROJECT_ID: ${{ secrets.DEV_PROJECT_ID }}
       PROD_PROJECT_ID: ${{ secrets.PROD_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
       
     steps:
       - name: Checkout dev branch
@@ -23,7 +25,7 @@ jobs:
       - name: Pull schema from dev branch
         run: |
           supabase login --token ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          supabase link --project-ref $DEV_PROJECT_ID
+          echo "$SUPABASE_DB_PASSWORD" | supabase link --project-ref $DEV_PROJECT_ID
           supabase db pull  # Generates migration from Studio changes
 
       - name: Commit migrations
