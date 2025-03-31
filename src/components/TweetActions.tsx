@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { MessageSquare, Repeat, Heart, Share } from 'lucide-react';
+import { likeTweet, retweetPost } from '../services/tweetService';
+import { toast } from 'sonner';
 
 interface TweetActionsProps {
   replies: number;
@@ -14,23 +16,54 @@ const TweetActions = ({ replies, retweets, likes, tweetId }: TweetActionsProps) 
   const [likeCount, setLikeCount] = useState(likes);
   const [retweeted, setRetweeted] = useState(false);
   const [retweetCount, setRetweetCount] = useState(retweets);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const handleLike = () => {
-    if (liked) {
-      setLikeCount(likeCount - 1);
-    } else {
-      setLikeCount(likeCount + 1);
+  const handleLike = async () => {
+    if (isUpdating) return;
+    
+    try {
+      setIsUpdating(true);
+      // Optimistically update UI
+      const newLikeStatus = !liked;
+      const newCount = newLikeStatus ? likeCount + 1 : likeCount - 1;
+      setLiked(newLikeStatus);
+      setLikeCount(newCount);
+      
+      // Update in database
+      await likeTweet(tweetId, newLikeStatus);
+    } catch (error) {
+      // Revert on error
+      setLiked(liked);
+      setLikeCount(likeCount);
+      toast.error('Failed to update like status');
+      console.error('Error liking tweet:', error);
+    } finally {
+      setIsUpdating(false);
     }
-    setLiked(!liked);
   };
 
-  const handleRetweet = () => {
-    if (retweeted) {
-      setRetweetCount(retweetCount - 1);
-    } else {
-      setRetweetCount(retweetCount + 1);
+  const handleRetweet = async () => {
+    if (isUpdating) return;
+    
+    try {
+      setIsUpdating(true);
+      // Optimistically update UI
+      const newRetweetStatus = !retweeted;
+      const newCount = newRetweetStatus ? retweetCount + 1 : retweetCount - 1;
+      setRetweeted(newRetweetStatus);
+      setRetweetCount(newCount);
+      
+      // Update in database
+      await retweetPost(tweetId, newRetweetStatus);
+    } catch (error) {
+      // Revert on error
+      setRetweeted(retweeted);
+      setRetweetCount(retweetCount);
+      toast.error('Failed to update retweet status');
+      console.error('Error retweeting:', error);
+    } finally {
+      setIsUpdating(false);
     }
-    setRetweeted(!retweeted);
   };
 
   const formatNumber = (num: number): string => {
@@ -60,6 +93,7 @@ const TweetActions = ({ replies, retweets, likes, tweetId }: TweetActionsProps) 
         className={`flex items-center transition-colors group ${retweeted ? 'text-green-500' : 'text-twitter-darkGray hover:text-green-500'}`}
         onClick={handleRetweet}
         aria-label="Retweet"
+        disabled={isUpdating}
       >
         <div className="p-2 rounded-full group-hover:bg-green-50">
           <Repeat size={18} className={retweeted ? 'text-green-500' : 'group-hover:text-green-500'} />
@@ -72,6 +106,7 @@ const TweetActions = ({ replies, retweets, likes, tweetId }: TweetActionsProps) 
         className={`flex items-center transition-colors group ${liked ? 'text-red-500' : 'text-twitter-darkGray hover:text-red-500'}`}
         onClick={handleLike}
         aria-label="Like"
+        disabled={isUpdating}
       >
         <div className="p-2 rounded-full group-hover:bg-red-50">
           <Heart 

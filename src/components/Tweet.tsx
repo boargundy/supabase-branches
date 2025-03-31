@@ -1,10 +1,25 @@
 
 import React from 'react';
-import { Tweet as TweetType } from '../data/sampleTweets';
 import TweetActions from './TweetActions';
 
-interface TweetProps {
-  tweet: TweetType;
+interface TweetUser {
+  id: string;
+  name: string;
+  handle: string;
+  avatar: string;
+}
+
+export interface TweetProps {
+  tweet: {
+    id: string;
+    user: TweetUser;
+    content: string;
+    timestamp: string;
+    likes: number;
+    retweets: number;
+    replies: number;
+    image?: string;
+  };
 }
 
 const Tweet = ({ tweet }: TweetProps) => {
