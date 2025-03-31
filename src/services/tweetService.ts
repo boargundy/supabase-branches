@@ -16,7 +16,11 @@ export const getTweets = async (): Promise<(Tweet & { user: User })[]> => {
     throw error;
   }
 
-  return data || [];
+  // Fixing the type issue by ensuring each tweet has the expected user shape
+  return (data || []).map(tweet => ({
+    ...tweet,
+    user: tweet.user as unknown as User
+  }));
 };
 
 export const likeTweet = async (tweetId: string, liked: boolean): Promise<void> => {
