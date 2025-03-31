@@ -1,7 +1,9 @@
 
 name: Deploy Dev to Prod
 on:
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch:
+    branches:
+      - dev  # Only allow manual trigger from dev branch
 
 jobs:
   deploy:
