@@ -44,7 +44,9 @@ jobs:
 
       - name: Pull schema from dev branch
         run: |
-          supabase db pull --db-url "postgresql://postgres.pmqmkzpriikzvvzlkmgk:${{ secrets.DEV_DB_PASSWORD }}@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
+          supabase db pull --schema public,auth,storage || echo "No schema changes found"
+
+          supabase db pull --schema public,auth,storage --db-url "postgresql://postgres.pmqmkzpriikzvvzlkmgk:${{ secrets.DEV_DB_PASSWORD }}@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
 
 
       - name: Commit migrations
