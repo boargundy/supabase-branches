@@ -14,7 +14,7 @@ export const todoService = {
       throw error;
     }
 
-    return data || [];
+    return data as Todo[] || [];
   },
 
   async getTodoById(id: number): Promise<Todo | null> {
@@ -29,7 +29,7 @@ export const todoService = {
       throw error;
     }
 
-    return data;
+    return data as Todo | null;
   },
 
   async createTodo(todo: CreateTodoInput): Promise<Todo> {
@@ -44,7 +44,7 @@ export const todoService = {
       throw error;
     }
 
-    return data;
+    return data as Todo;
   },
 
   async updateTodo(id: number, todo: UpdateTodoInput): Promise<Todo> {
@@ -60,7 +60,7 @@ export const todoService = {
       throw error;
     }
 
-    return data;
+    return data as Todo;
   },
 
   async deleteTodo(id: number): Promise<void> {
