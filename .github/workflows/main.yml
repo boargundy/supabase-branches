@@ -5,6 +5,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       DEV_PROJECT_ID: ${{ secrets.DEV_PROJECT_ID }}
       PROD_PROJECT_ID: ${{ secrets.PROD_PROJECT_ID }}
